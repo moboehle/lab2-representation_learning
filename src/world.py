@@ -66,6 +66,10 @@ class world():
 
     def get_reward(self):
 
+        if self.mode == "vaxis_only":
+
+
+
         if self.mode == "abs_length":
             return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2+(self.haxis-self.opti_haxis)**2),5]) \
                 if not self.game_over() else self.goal_reward
@@ -75,13 +79,17 @@ class world():
                     self.optimal_ratio/self.get_ratio()])**2,5]) \
                     if not self.game_over() else self.goal_reward
 
-        if self.mode == "simple_abs":
+        if self.mode == "simple_abs" or self.mode == "vaxis_only":
             return 0 if not self.game_over() else self.goal_reward
 
         else:
             raise NotImplementedError
 
     def game_over(self, precision = .05):
+
+        if self.mode == "vaxis_only":
+            return np.abs(self.vaxis-self.opti_vaxis) < precision
+
         if self.mode == "abs_length" or self.mode == "simple_abs":
             return np.abs(self.vaxis-self.opti_vaxis) < precision and  np.abs(self.haxis-self.opti_haxis) < precision
         if self.mode == "ratio" :
