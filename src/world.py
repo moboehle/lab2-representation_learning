@@ -7,8 +7,8 @@ class world():
 
         self.mode = game_mode
         self.optimal_ratio = 1
-        self.opti_haxis = 10
-        self.opti_vaxis = 10
+
+        self.set_taret()
         self.goal_reward = goal_reward
         #ratio represents the ratio between the two main axes, namely horizontal / vertical.
 
@@ -29,6 +29,11 @@ class world():
         self.set_frame()
         self.ax_dict = {"haxis" :self.haxis, "vaxis": self.vaxis}
 
+
+    def set_target(self, vaxis=10,haxis=10):
+
+        self.opti_haxis = haxis
+        self.opti_vaxis = vaxis
 
     def set_frame(self):
 
