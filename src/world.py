@@ -3,12 +3,13 @@ from params import *
 from scipy import ndimage as img
 class world():
 
-    def __init__(self,ratio = None, optimal_ratio = 1, game_mode = "ratio"):
+    def __init__(self,ratio = None, optimal_ratio = 1, game_mode = "ratio",goal_reward = 10):
 
         self.mode = game_mode
         self.optimal_ratio = 1
         self.opti_haxis = 10
         self.opti_vaxis = 10
+        self.goal_reward = goal_reward
         #ratio represents the ratio between the two main axes, namely horizontal / vertical.
 
         if ratio is None:
@@ -67,15 +68,15 @@ class world():
 
         if self.mode == "abs_length":
             return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2+(self.haxis-self.opti_haxis)**2),5]) \
-                if not self.game_over() else 100
+                if not self.game_over() else self.goal_reward
 
         if self.mode == "ratio":
             return -np.max([np.max([self.get_ratio()/self.optimal_ratio,\
                     self.optimal_ratio/self.get_ratio()])**2,5]) \
-                    if not self.game_over() else 100
+                    if not self.game_over() else self.goal_reward
 
         if self.mode == "simple_abs":
-            return 0 if not self.game_over() else 1
+            return 0 if not self.game_over() else self.goal_reward
 
         else:
             raise NotImplementedError
