@@ -66,10 +66,6 @@ class world():
 
     def get_reward(self):
 
-        if self.mode == "vaxis_only":
-
-
-
         if self.mode == "abs_length":
             return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2+(self.haxis-self.opti_haxis)**2),5]) \
                 if not self.game_over() else self.goal_reward
