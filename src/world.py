@@ -8,7 +8,7 @@ class world():
         self.mode = game_mode
         self.optimal_ratio = 1
 
-        self.set_taret()
+        self.set_target()
         self.goal_reward = goal_reward
         #ratio represents the ratio between the two main axes, namely horizontal / vertical.
 
@@ -74,13 +74,16 @@ class world():
         if self.mode == "abs_length":
             return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2+(self.haxis-self.opti_haxis)**2),5]) \
                 if not self.game_over() else self.goal_reward
+        if self.mode == "vaxis_only":
+            return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2),5]) \
+                if not self.game_over() else self.goal_reward
 
         if self.mode == "ratio":
             return -np.max([np.max([self.get_ratio()/self.optimal_ratio,\
                     self.optimal_ratio/self.get_ratio()])**2,5]) \
                     if not self.game_over() else self.goal_reward
 
-        if self.mode == "simple_abs" or self.mode == "vaxis_only":
+        if self.mode == "simple_abs" or self.mode == "simple_vaxis_only":
             return 0 if not self.game_over() else self.goal_reward
 
         else:
@@ -88,7 +91,7 @@ class world():
 
     def game_over(self, precision = .05):
 
-        if self.mode == "vaxis_only":
+        if  "vaxis_only" in self.mode:
             return np.abs(self.vaxis-self.opti_vaxis) < precision
 
         if self.mode == "abs_length" or self.mode == "simple_abs":
