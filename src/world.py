@@ -74,13 +74,16 @@ class world():
                     self.optimal_ratio/self.get_ratio()])**2,5]) \
                     if not self.game_over() else 100
 
+        if self.mode == "simple_abs":
+            return 0 if not self.game_over() else 1
+
         else:
             raise NotImplementedError
 
     def game_over(self, precision = .05):
-        if self.mode == "abs_length":
+        if self.mode == "abs_length" or self.mode == "simple_abs":
             return np.abs(self.vaxis-self.opti_vaxis) + np.abs(self.haxis-self.opti_haxis) < precision
-        if self.mode == "ratio":
+        if self.mode == "ratio" :
             return self.get_ratio()/self.optimal_ratio < precision
         else :
             raise NotImplementedError
