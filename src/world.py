@@ -82,7 +82,7 @@ class world():
 
     def game_over(self, precision = .05):
         if self.mode == "abs_length" or self.mode == "simple_abs":
-            return np.abs(self.vaxis-self.opti_vaxis) + np.abs(self.haxis-self.opti_haxis) < precision
+            return np.abs(self.vaxis-self.opti_vaxis) < precision and  np.abs(self.haxis-self.opti_haxis) < precision
         if self.mode == "ratio" :
             return self.get_ratio()/self.optimal_ratio < precision
         else :
