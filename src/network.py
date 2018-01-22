@@ -6,7 +6,7 @@ x = tf.placeholder(tf.float32, shape=[None, FRAME_DIM,FRAME_DIM,1])
 
 def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, padding = None,\
             actvt_fct = None, n_out_h2 = None, kernel_size_h2 = None, strides_h2 = None,\
-           n_out_h3 = None, initializer = None,num_actions = None):
+           n_out_h3 = None, initializer = None,num_actions = None, num_targets = 1):
     
     '''Creates a network with its variables in the scope network/{name}.
        Useful for creating an online learning network and a network for target prediction.
@@ -28,7 +28,10 @@ def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, paddi
         
         ### Finally the last fully connected layer. This will give the q-value estimate for each action respectively
         #   at the state that was passed into the first layer. No acitvation function needed.
-        q_values = tf.layers.dense(h_3, num_actions,kernel_initializer=initializer)
+        
+        q_values = [tf.layers.dense(h_3, num_actions,kernel_initializer=initializer) for _ in range(num_targets)]
+            
+            
         
         ### Collect all the variables that are defined within this scope.
         theta    = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,scope=scope.name)
