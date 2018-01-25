@@ -3,40 +3,31 @@ from params import *
 from scipy import ndimage as img
 class world():
 
-    def __init__(self,ratio = None, optimal_ratio = 1, game_mode = "ratio",goal_reward = 10):
+    def __init__(self,ratio = None, optimal_ratio = 1, game_mode = "abs_length",goal_reward = 10):
 
         self.mode = game_mode
         self.optimal_ratio = 1
 
         self.set_target()
         self.goal_reward = goal_reward
-        #ratio represents the ratio between the two main axes, namely horizontal / vertical.
-
-        if ratio is None:
-            self.ratio = np.random.random()*(MAX_RATIO-MIN_RATIO)+MIN_RATIO
-        else: self.ratio = ratio
-
-        #Initialize horizontal axis randomly, set vertical axis to fulfill ratio requirements.
-        #Make sure neither one of the axis will let part of the ellipse be outside the frame by
-        #using the ratio to cap the random length. Lengths measured in pixels.
-        self.haxis = np.random.random()*(FRAME_DIM-2*MARGIN)/2
-        if self.haxis / self.ratio >= (FRAME_DIM/2-MARGIN):
-            self.haxis *=self.ratio
-
-        self.vaxis = self.haxis/self.ratio
-        #print(self.haxis,self.vaxis)
+        #Random starting state
+        self.haxis, self.vaxis = np.random.random(2)*(FRAME_DIM-MARGIN)/2
 
         self.set_frame()
-        self.ax_dict = {"haxis" :self.haxis, "vaxis": self.vaxis}
 
 
     def set_target(self, vaxis=10,haxis=10):
-
+        '''
+        For multitarget setting. Allows to reset the target to specific
+        location so that reward and game over are calculated correctly.
+        '''
         self.opti_haxis = haxis
         self.opti_vaxis = vaxis
 
     def set_frame(self):
-
+        '''
+        Redraw ellipse after change.
+        '''
         self.frame = np.zeros((FRAME_DIM,FRAME_DIM))
 
         self.edge = np.array([np.round((self.haxis*np.cos(angle),self.vaxis*np.sin(angle))) +\
@@ -48,29 +39,38 @@ class world():
         self.frame = self.frame.T
 
     def get_frame(self):
+        '''Returns the current ellipse matrix'''
         return self.frame.reshape((FRAME_DIM,FRAME_DIM,1))#img.filters.gaussian_filter(self.frame, 2)
 
     def change_width(self, amount):
-
-        if not self.haxis*(1+amount) >= FRAME_DIM/2-MARGIN:
-            self.haxis*=(1+amount)
-        if self.haxis < 1:
-            self.haxis =  FRAME_DIM/2-MARGIN - 1
+        '''
+        Change width by amount pixels.
+        If too big or too small, use periodic boundaries.
+        '''
+        self.haxis= (self.haxis+amount)%int(FRAME_DIM/2-MARGIN/2)
         self.set_frame()
 
     def change_height(self, amount):
-
-        if not np.abs(self.vaxis*(1+amount)) >= FRAME_DIM/2-MARGIN:
-            self.vaxis*=(1+amount)
-        if self.vaxis < 1:
-            self.vaxis =  FRAME_DIM/2-MARGIN - 1
+        '''
+        Change height by amount pixels.
+        If too big or too small, use periodic boundaries.
+        '''
+        self.vaxis= (self.vaxis+amount)%int(FRAME_DIM/2-MARGIN/2)
         self.set_frame()
 
     def get_ratio(self):
+        '''
+        Returns ratio, probably not going to be used anymore.
+        '''
         return self.haxis/self.vaxis
 
     def get_reward(self):
-
+        '''
+        Getting the reward for different game modes.
+        Either constant reward for being close / punishment for being far.
+        Or only getting rewards once game is over, otherwise constant.
+        TODO Check if maximal punishment is necessary or even detrimental to learning.
+        '''
         if self.mode == "abs_length":
             return -np.max([np.sqrt((self.vaxis-self.opti_vaxis)**2+(self.haxis-self.opti_haxis)**2),5]) \
                 if not self.game_over() else self.goal_reward
@@ -91,6 +91,7 @@ class world():
 
     def game_over(self, precision = .05):
 
+        '''Game is over once the goal state is reached to desired precision.'''
         if  "vaxis_only" in self.mode:
             return np.abs(self.vaxis-self.opti_vaxis) < precision
 
@@ -102,4 +103,6 @@ class world():
             raise NotImplementedError
 
     def restart(self):
-        self.__init__(optimal_ratio=self.optimal_ratio,game_mode=self.mode)
+        '''Resetting the world to random state.'''
+        self.haxis, self.vaxis = np.random.random(2)*(FRAME_DIM-MARGIN)/2
+        self.set_frame()
