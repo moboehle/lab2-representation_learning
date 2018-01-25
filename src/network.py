@@ -19,12 +19,12 @@ def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, paddi
         ### First two layers are convolutional layers.
         h_1 = tf.layers.conv2d(x, filters = n_out_h1, kernel_size = kernel_size_h1, strides = strides_h1,\
                                padding = padding, activation = actvt_fct, kernel_initializer = initializer)
-        h_2 = tf.layers.conv2d(x, filters = n_out_h2, kernel_size = kernel_size_h2, strides = strides_h2,\
-                               padding = padding, activation = actvt_fct, kernel_initializer = initializer)
+        #h_2 = tf.layers.conv2d(x, filters = n_out_h2, kernel_size = kernel_size_h2, strides = strides_h2,\
+        #                       padding = padding, activation = actvt_fct, kernel_initializer = initializer)
         
         
         ### Third layer is a fully connected layer. Therefore pass the flattened h_2 into the network.
-        h_3 = tf.layers.dense(tf.layers.Flatten()(h_2), n_out_h3, activation=actvt_fct,kernel_initializer=initializer)
+        h_3 = tf.layers.dense(tf.layers.Flatten()(h_1), n_out_h3, activation=actvt_fct,kernel_initializer=initializer)
         
         ### Finally the last fully connected layer. This will give the q-value estimate for each action respectively
         #   at the state that was passed into the first layer. No acitvation function needed.
