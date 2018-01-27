@@ -2,7 +2,7 @@ import tensorflow as tf
 from params import * 
 
 
-x = tf.placeholder(tf.float32, shape=[None, FRAME_DIM,FRAME_DIM,1])
+x = tf.placeholder(tf.float32, shape=[None, FRAME_DIM,FRAME_DIM,3])
 
 def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, padding = None,\
             actvt_fct = None, n_out_h2 = None, kernel_size_h2 = None, strides_h2 = None,\
@@ -39,6 +39,6 @@ def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, paddi
         #   online to target by just using the relative names.
         theta_names = {var.name[len(scope.name):]: var for var in theta}
         
-        return q_values, theta_names
+        return q_values, theta_names,h_3
         
     
