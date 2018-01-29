@@ -7,15 +7,20 @@ class world():
     angles = np.arange(0,2*np.pi+delta_angle*np.pi,delta_angle*np.pi)
 
     def __init__(self, game_mode = "constant_reward",\
-    goal_reward = 10,ignore_second_ellipse = True,precision = 1):
+    goal_reward = 10,ignore_second_ellipse = True,ignore_first_ellipse = False,precision = 1):
         '''
         Setting up the world with random ellipses.
         '''
+
+        if ignore_first_ellipse and ignore_second_ellipse:
+            print("You cannot ignore both ellipses... exiting.")
+            exit(1)
 
         self.mode = game_mode
         #Dimensions for three color channels
         self.frame = np.zeros((FRAME_DIM,FRAME_DIM,3))
         self.ignore_second_ellipse = ignore_second_ellipse
+        self.ignore_first_ellipse = ignore_first_ellipse
         self.goal_reward = goal_reward
         #Random starting state
         self.haxis, self.vaxis,self.haxis2, self.vaxis2 = np.random.random(4)*(FRAME_DIM-MARGIN)/2
@@ -116,6 +121,12 @@ class world():
             else:
                 raise NotImplementedError
 
+        elif self.ignore_first_ellipse:
+            if self.mode == "constant_reward":
+                return  -self.measure_distance("second")/(FRAME_DIM/4-MARGIN/4)*10 if not self.game_over() else self.goal_reward
+            else:
+                raise NotImplementedError
+
         else:
             if self.mode == "constant_reward":
                 #Divide by two to have same scaling in rewards.
@@ -156,9 +167,11 @@ class world():
 
         if self.ignore_second_ellipse:
             return int(self.measure_distance("first") < self.precision)
+        elif self.ignore_first_ellipse:
+            return int(self.measure_distance("second") < self.precision)
 
         else :
-            return int(self.measure_distance("both") < self.precision)
+            return int(self.measure_distance("both")/2 < self.precision)
 
     def restart(self):
         '''Resetting the world to random state.'''
