@@ -4,6 +4,5 @@ MIN_RATIO = 1/4
 FRAME_DIM = 80
 #margin leaves minimum distance between ellipse and frame borders
 MARGIN    =  0.2*FRAME_DIM
-
 #resolution of angle increments
 delta_angle = .005

@@ -2,9 +2,8 @@ import tensorflow as tf
 from params import * 
 
 
-x = tf.placeholder(tf.float32, shape=[None, FRAME_DIM,FRAME_DIM,3])
 
-def network(name, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, padding = None,\
+def network(name,x, n_out_h1=None, kernel_size_h1 = None, strides_h1 = None, padding = None,\
             actvt_fct = None, n_out_h2 = None, kernel_size_h2 = None, strides_h2 = None,\
            n_out_h3 = None, initializer = None,num_actions = None, num_targets = 1):
     
