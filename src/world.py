@@ -14,7 +14,7 @@ class world():
 
     def __init__(self, game_mode = "constant_reward",\
     goal_reward = 10,ignore_second = True,ignore_first = False,\
-    precision = 1, first_in_second = False, both_in_first = False):
+    precision = 1, first_in_second = False, both_in_first = False,**kwargs):
         '''
         Setting up the world with random ellipses.
         Keywords:
@@ -158,7 +158,7 @@ class world():
                 self.frame[:,:,0] *=0
                 self.frame[:,:,0] += self.all_ellipses[(self.vaxis-1)*(self.max_length)+(self.haxis-1)]
 
-            if which == "second" or which == "both":
+            if which == "second" or which == "both" or self.first_in_second:
                 self.frame[:,:,1] *=0
                 self.frame[:,:,1] += self.all_ellipses[(self.vaxis2-1)*(self.max_length)+(self.haxis2-1)]
 
