@@ -164,6 +164,10 @@ class Network:
     
     
     def almost_greedy_play(self,load_path = None, max_time = 10000,epsilon=.1):
+        '''
+        In order to assess performance, restore network from previous checkpoint under load_path
+        and let play for max_time steps. Use small epsilon and count number of completed games.
+        '''
         over = False
         game_length = 0
         finished   = 0
@@ -204,8 +208,6 @@ class Network:
                             finished +=1
                             self.my_world.restart()
                             state = self.my_world.get_frame()
-
-                        epsil = .1
 
                         #act and observe
                         state, reward, over, action_idx = self.act_and_observe(state,epsilon)
@@ -350,7 +352,11 @@ class Network:
                     
     def analyze_invariance(self,load_path = None):
         
-        
+        '''
+        In order to analyze the representations the network learns, 
+        record and store the outputs for different points in state space.
+        Record q_values, last hidden layer output and variance of last hidden layer over second dimension.
+        '''
         if load_path is None:
             load_path = self.load_path
 
@@ -436,6 +442,9 @@ class Network:
         
         
     def get_curr_eps(self,num_updates):
+        '''
+        Decay scheme for epsilon in epsilon greedy.
+        '''
         return 1 if num_updates  < self.exploratory_steps else  \
                 max(self.eps_min, self.eps_max - (self.eps_max-self.eps_min) * 
                     (num_updates-self.exploratory_steps)/self.eps_decay_steps)
