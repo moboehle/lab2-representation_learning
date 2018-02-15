@@ -47,15 +47,15 @@ if __name__ == "__main__":
     subdirs = next(os.walk(path))[1]
     subdirs.append(".")
     num_cpus = min(multiprocessing.cpu_count(),8)
-    time_,games_,var_mean_ = Parallel(n_jobs=num_cpus)(delayed(analyze_subdir)(path,subdir) for subdir in subdirs)
-    
+    output = Parallel(n_jobs=num_cpus)(delayed(analyze_subdir)(path,subdir) for subdir in subdirs)
+    time_,games_,var_mean_ = zip(*output)
         
 
-    tmp = sorted(np.array([time_,games_,var_mean_]).T,key=lambda x : x[0])
+    tmp = np.array(sorted(np.array([time_,games_,var_mean_]).T,key=lambda x : x[0]))
     
-    np.savetxt(path+"time.csv",tmp[0])
-    np.savetxt(path+"performance.csv",tmp[1])
-    np.savetxt(path+"var_mean.csv",tmp[2])
+    np.savetxt(path+"time.csv",tmp[:,0])
+    np.savetxt(path+"performance.csv",tmp[:,1])
+    np.savetxt(path+"var_mean.csv",tmp[:,2])
 
     
     
