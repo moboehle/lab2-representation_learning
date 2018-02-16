@@ -116,7 +116,7 @@ class Network:
             self.y = tf.placeholder(tf.float32, shape=[None, 1])
 
             self.q_value_per_target = [tf.reduce_sum(output * tf.one_hot(self.act_idx, self.num_actions),
-                                                     axis=1, keepdims=True) for output in self.learner_out]
+                                                     axis=1, keep_dims=True) for output in self.learner_out]
 
             self.loss_per_target = [tf.clip_by_value(tf.squared_difference(self.y,q_value,"loss"),0,100) 
                                     for q_value in self.q_value_per_target]
@@ -371,7 +371,7 @@ class Network:
                 return -1
             
             #Stride with which to go through state space
-            sparse_space = 8
+            sparse_space = 4
             
             #List of last layer activations for each point in sparse state space 
             activation_list = np.zeros((self.range_x+1,self.range_y+1,
@@ -392,9 +392,7 @@ class Network:
                 self.my_world.vaxis = ellipse[1]
                 
                 self.my_world.set_frame(which="first")
-
-                activation_list *=0
-
+                
                 #... calculate the activation for all other forms and use that to calc variance of activations
                 for idx, ellipse2 in enumerate(self.parameter_space[::sparse_space]):
 
@@ -407,8 +405,7 @@ class Network:
 
                     activation_list[ellipse[0]][ellipse[1]][idx], _q_vals[ellipse[0]][ellipse[1]][idx]  =\
                         sess.run([self.predictor_layers[1],self.predictor_out], feed_dict={self.x: [state]})
-                    
-                    
+                                        
                 activations_var[ellipse[0]][ellipse[1]] = activation_list[ellipse[0]][ellipse[1]].var(axis=0)
                 #print("\rDone with {0:4d} / {1:4d} points in parameter space"
                 #.format(count,self.parameter_space.shape[0]),end="")
